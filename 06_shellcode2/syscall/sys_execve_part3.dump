@@ -1,0 +1,14 @@
+
+sys_execve_part3:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000401000 <_start>:
+  401000:	57                   	push   rdi
+  401001:	54                   	push   rsp
+  401002:	5f                   	pop    rdi
+  401003:	6a 3b                	push   0x3b
+  401005:	58                   	pop    rax
+  401006:	99                   	cdq    
+  401007:	0f 05                	syscall 

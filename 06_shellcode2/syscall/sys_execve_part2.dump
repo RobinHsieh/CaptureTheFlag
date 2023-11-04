@@ -1,0 +1,11 @@
+
+sys_execve_part2:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000401000 <_start>:
+  401000:	48 bf 2f 62 69 6e 2f 	movabs rdi,0x68732f2f6e69622f
+  401007:	2f 73 68 
+  40100a:	48 8d 45 a0          	lea    rax,[rbp-0x60]
+  40100e:	ff e0                	jmp    rax
