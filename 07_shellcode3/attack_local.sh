@@ -8,7 +8,7 @@ if [[ -e payload_7_2 ]]; then
 fi
 
 : << Illustration
-* Restriction of specified characters are way too strict, think the method that can break the restriction
+* Restriction of specified characters(simulating canary) are way too strict, think the method that can break the restriction
 * Make best effort to generate effective instructions by using only six restricted bytes a unit
 * Use two frame to invoke sys_read, so that it can cover the recent restricted shellcode and then write a new shellcode
 Illustration

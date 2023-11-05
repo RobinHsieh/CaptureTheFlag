@@ -10,7 +10,14 @@ fi
 host="ctf.adl.tw"
 port="10004"
 
+: << Illustration
+* Restriction of specified characters(simulateing canary) are way too strict, think the method that can break the restriction
+* Make best effort to generate effective instructions by using only six restricted bytes a unit
+* Use two frame to invoke sys_read, so that it can cover the recent restricted shellcode and then write a new shellcode
+Illustration
 
+
+# six bytes a frame, first three bytes must be \x0c, \x87, \x63 on each frame.
 frame="\x0c\x87\x63\x01\x01\x01"
 
 
