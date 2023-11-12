@@ -91,7 +91,7 @@ while True:
     if canary_len == 8:
         break
 
-print("FOUND:\\x" + '\\x'.join("{:02x}".format(c) for c in canary))
+print("Canary:\\x" + '\\x'.join("{:02x}".format(c) for c in canary))
 
 
 # Start to inject ROP
