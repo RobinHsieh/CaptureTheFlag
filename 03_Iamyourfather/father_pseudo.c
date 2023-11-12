@@ -1,3 +1,12 @@
+__int64 init_0()
+{
+  setvbuf(stdout, 0LL, 2LL, 0LL);
+  setvbuf(stdin, 0LL, 2LL, 0LL);
+  return setvbuf(stderr, 0LL, 2LL, 0LL);
+}
+
+
+
 __int64 banner()
 {
   puts("1. create a child");

