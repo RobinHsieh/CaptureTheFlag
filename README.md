@@ -55,7 +55,7 @@ length, format, unit 是可選的參數
 ### search `<`instruction`>`
 尋找 ROP gadgets
 
-Example:\
+_Example:_\
 <img src="image/ropper_search.png" width="420" height="340">
 
 
@@ -105,6 +105,20 @@ int main() {
 
 	return 0;
 }
+```
+首先要了解 function pointer 的概念，可以參考 [C 語言中的函數指標](https://openhome.cc/Gossip/CGossip/FunctionPointer.html)。
+
+接下來，使用 `objdump -d <executable>` 反組譯執行檔的 .text 區段，擷取出對應 C code 中的這兩行的組合語言：
+```c
+void (*func)() = (void (*)())buf;
+(*func)();
+```
+```objdump
+  401221:	48 8d 85 30 ff ff ff 	lea    rax,[rbp-0xd0]
+  401228:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
+  40122c:	48 8b 55 f8          	mov    rdx,QWORD PTR [rbp-0x8]
+  401230:	b8 00 00 00 00       	mov    eax,0x0
+  401235:	ff d2                	call   rdx
 ```
 
 
