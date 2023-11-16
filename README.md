@@ -1,4 +1,4 @@
-# Write-up CTF 11/2023
+# Write-up CTF 11/2023, Catogory: Pwn
 
 
 ## objdump commands
