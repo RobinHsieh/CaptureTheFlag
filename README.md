@@ -138,7 +138,7 @@ RelRO                         : Partial
 
 所以接下來只要將 sys_execve 的 shellcode 寫入 `buf`，就可以成功了，
 shellcode 可以參考 [shell-storm](http://shell-storm.org/shellcode/)，這裡使用的是 [Linux/x86 - execve(/bin/sh) Shellcode (21 bytes)](http://shell-storm.org/shellcode/files/shellcode-827.php)：
-```assembly
+
 
 
 ### 06_shellcode2
