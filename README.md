@@ -54,7 +54,7 @@ length, format, unit 是可選的參數
 
 ### search `<`instruction`>`
 尋找 ROP gadgets
-![ropper search](images/ropper_search.png)
+<img src="image/ropper_search.png" width="420" height="340">
 
 
 ## Challenges
