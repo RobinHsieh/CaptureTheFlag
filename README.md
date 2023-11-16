@@ -136,8 +136,9 @@ Fortify                       : ✘
 RelRO                         : Partial
 ```
 
-所以接下來只要將 sys_execve 的 shellcode 寫入 `buf`，就可以成功了
-
+所以接下來只要將 sys_execve 的 shellcode 寫入 `buf`，就可以成功了，
+shellcode 可以參考 [shell-storm](http://shell-storm.org/shellcode/)，這裡使用的是 [Linux/x86 - execve(/bin/sh) Shellcode (21 bytes)](http://shell-storm.org/shellcode/files/shellcode-827.php)：
+```assembly
 
 
 ### 06_shellcode2
@@ -146,6 +147,54 @@ RelRO                         : Partial
 * Shellcode crafting
 * jmp instruction
 * `read` syscall
+
+#### Solving Process
+題目有給 C code，先打開來看看：
+
+```c
+#include <stdlib.h>
+#include <stdio.h>
+
+void init() {
+	setvbuf(stdin, NULL, _IONBF, 0);
+	setvbuf(stdout, NULL, _IONBF, 0);
+	setvbuf(stderr, NULL, _IONBF, 0);
+	return;
+}
+
+int main() {
+	init();
+	char buf[200];
+
+	puts("Input something in this buffer!!!");
+	puts("However,you can't input 'nop' such as '0x90' this time!!!");
+	puts("And also,you need to bypass some restrictions in your shellcode!!!");
+	read(0, buf, 200);
+
+	for (int i = 0; i < 200; i++) {
+		if (buf[i] == '\x90') {
+			puts("You can't input '0x90' this time!  :(( ");
+			exit(0);
+		}
+	}
+
+	for (int i = 0; i < 10; i++) {
+		if (buf[i*20] != '\x0c' && buf[(i*20)+1] != '\x87' && buf[(i*20)+2] != '\x63') {
+			puts("Try to bypass the restriction!!!");
+			puts("Try again!!!");
+			exit(0);
+		}
+	}
+
+	void (*func)() = (void (*)())buf;
+	(*func)();
+
+	return 0;
+}
+```
+可以看到這次的限制有兩個：
+1. 不能輸入 `nop` (0x90)
+2. 每 20 bytes 會檢查前三個 bytes 是否為 `0x0c 0x87 0x63`（好中二XD）
 
 
 
