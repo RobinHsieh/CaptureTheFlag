@@ -120,6 +120,22 @@ void (*func)() = (void (*)())buf;
   401230:	b8 00 00 00 00       	mov    eax,0x0
   401235:	ff d2                	call   rdx
 ```
+來解析一下這段組合語言在做什麼：
+
+第1, 2行在把 `buf`的值 寫入 `func` 的位址`[rbp-0x8]`\
+第3~5行要呼叫 `func`\
+明顯就是要讓 rip 跳到 stack segment 執行 `buf` 的內容 (shellcode)
+
+用 `checksec` 檢查執行檔的安全性:
+```
+[+] checksec for '/home/citrusalessia/CaptureTheFlag/05_shellcode/shellcode'
+Canary                        : ✘ 
+NX                            : ✘ 
+PIE                           : ✘ 
+Fortify                       : ✘ 
+RelRO                         : Partial
+```
+
 
 
 
