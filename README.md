@@ -108,12 +108,12 @@ int main() {
 ```
 首先要了解 function pointer 的概念，可以參考 [C 語言中的函數指標](https://openhome.cc/Gossip/CGossip/FunctionPointer.html)。
 
-接下來，使用 `objdump -d <executable>` 反組譯執行檔的 .text 區段，擷取出對應 C code 中的這兩行的組合語言：
+為了更深刻得意會到這段程式碼在做什麼，使用 `objdump -d <executable>` 反組譯執行檔的 .text 區段，擷取出對應 C code 中的這兩行的組合語言：
 ```c
 void (*func)() = (void (*)())buf;
 (*func)();
 ```
-```objdump
+```assembly
   401221:	48 8d 85 30 ff ff ff 	lea    rax,[rbp-0xd0]
   401228:	48 89 45 f8          	mov    QWORD PTR [rbp-0x8],rax
   40122c:	48 8b 55 f8          	mov    rdx,QWORD PTR [rbp-0x8]
@@ -196,6 +196,7 @@ int main() {
 1. 不能輸入 `nop` (0x90)
 2. 每 20 bytes 會檢查前三個 bytes 是否為 `0x0c 0x87 0x63`（好中二XD）
 
+因此，能否用第一組 `0x0c 0x87 0x63` 為開頭湊出有效的指令集，並且使用 `jmp` 指令跳過剩下的 `0x0c 0x87 0x63`，就是解出這題的關鍵
 
 
 ### 07_shellcode3
