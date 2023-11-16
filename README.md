@@ -126,7 +126,7 @@ void (*func)() = (void (*)())buf;
 第3~5行要呼叫 `func`\
 明顯就是要讓 rip 跳到 stack segment 執行 `buf` 的內容 (shellcode)
 
-用 `checksec` 檢查執行檔的安全性：
+用 `checksec` 檢查執行檔的安全屬性，可以看到 NX 沒開：
 ```terminal
 [+] checksec for '/home/citrusalessia/CaptureTheFlag/05_shellcode/shellcode'
 Canary                        : ✘ 
@@ -136,6 +136,7 @@ Fortify                       : ✘
 RelRO                         : Partial
 ```
 
+所以接下來只要將 sys_execve 的 shellcode 寫入 `buf`，就可以成功了
 
 
 
