@@ -2,15 +2,17 @@
 
 
 ## objdump commands
-### objdump -h <executable>
+### objdump -h `<`executable`>`
 查看執行檔的 section headers
 - `Size` - section 的大小
 - `VMA` - section _**預定**_ 映射 (mapping) 在記憶體中的虛擬地址 (virtual memory address)
 
 
 ## gdb commands
+[gef –– GDB Enhanced Features 安裝教學](https://hugsy.github.io/gef/install/)
 
-### x/<length/format/unit> <addr>
+
+### x/`<`length/format/unit`>` `<`addr`>`
 `x`: 檢查記憶體中的內容。x 是 examine 的縮寫\
 length, format, unit 是可選的參數
 #### length —— 顯示的單位數量
@@ -31,19 +33,29 @@ length, format, unit 是可選的參數
 - `g` - giant word (64-bits)
 
 ### checksec
-檢查 binary 的安全性的工具，可以檢查 binary 是否開啟了 NX, PIE, RELRO, Canary 等等的保護機制。
+檢查執行檔的安全性，是否開啟了 NX, PIE, RELRO, Canary 等等的保護機制。
 
-### info proc mappings
+### info proc mappings & vmmap
 查看執行檔中，sections _**最終實際**_ 映射 (mapping) 在記憶體中的虛擬地址 (virtual memory address)
 - `r` - 可讀
 - `w` - 可寫
 - `x` - 可執行
 - `p` - 私有
 
-### vmmap
-
 
 ## ropper commands
+[Ropper 安裝教學](https://shantoroy.com/security/using-ropper-to-find-address-of-gadgets/)
+
+### source venv/bin/activate; ropper
+啟動 Ropper 交互式介面
+
+### file `<`executable`>`
+讀入 ELF 執行檔
+
+### search `<`instruction`>`
+尋找 ROP gadgets
+![ropper search](images/ropper_search.png)
+
 
 ## Challenges
 
