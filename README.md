@@ -354,15 +354,6 @@ syscall number 是 `rax = 0x00` 、參數分別是：\
 `rdx` - 要讀取到緩衝區的位元數 (count)
 
 `rsi` 已經指向了 `buf[0]`，所以只要把 `rdi`, `rdx` 和 `rax` 設定好就可以了
-\
-\
-\
-\
-\
-Q: 為何要呼叫 `sys_read` 呢？\
-A: 因為可以藉由呼叫 `sys_read` 來重新注入新的 shellcode 到 `buf[]` 的記憶體空間
-
-因為此時程式已經完成了對 `buf[]` 內容的位元檢查，所以重新注入的 shellcode 將不再受到位元限制
 
 下面是呼叫 `sys_read` 的ㄧ小段 shellcode：
 ```bash
@@ -380,5 +371,18 @@ shellcode_sys_read_part2="\x0c\x87\x63\xc3\x0f\x05"
 0f 05                   syscall
 Instruction
 ```
+
+Q: 為何要呼叫 `sys_read` 呢？\
+A: 因為可以藉由呼叫 `sys_read` 來重新注入新的 shellcode 到 `buf[]` 的記憶體空間
+
+此時程式已經完成了對 `buf[]` 內容的位元檢查，所以重新注入的 shellcode 將不再受到位元限制
+\
+\
+\
+\
+\
+接下來，只要再重新注入一段可以執行 `execve("/bin/sh", NULL, NULL)` 的 shellcode，就大功告成了
+
+
 
 
