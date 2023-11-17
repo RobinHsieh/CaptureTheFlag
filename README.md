@@ -198,6 +198,25 @@ int main() {
 
 因此，能否用第一組 `0x0c 0x87 0x63` 為開頭湊出有效的指令集，並且使用 `jmp` 指令跳過剩下的 `0x0c 0x87 0x63`，就是解出這題的關鍵
 
+利用 python 的 `pwntools` 來幫助我們湊出 shellcode：
+```python
+from pwn import *
+context.update(arch='amd64', os='linux')
+for i in range(0x100):
+    print(disasm(b"\x0c\x87\x63" + bytes([i])))
+    print()
+```
+
+`0x0c 0x87 0x63 0x56` 這對好像不錯：
+```assembly
+   0:   0c 87                   or     al, 0x87
+   2:   63                      .byte 0x63
+   3:   56                      push   rsi
+```
+
+再用 `objdump -b binary -m i386 -M intel -D <executable>` 確認一次：
+<img src="image/0c876356.png" width="700" height="190">
+
 
 ### 07_shellcode3
 #### Methods
