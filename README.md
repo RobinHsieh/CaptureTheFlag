@@ -56,7 +56,7 @@ length, format, unit 是可選的參數
 尋找 ROP gadgets
 
 _Example:_\
-<img src="image/ropper_search.png" width="420" height="340">
+<img src="image/ropper_search.png" width="840" height="680">
 
 
 ## Challenges
@@ -215,10 +215,10 @@ for i in range(0x100):
 ```
 
 再用 `objdump -b binary -m i386:86-64 -M intel -D <executable>` 確認一次：
-<img src="image/0c876356.png" width="700" height="190">
+<img src="image/0c876356.png" width="800" height="200">
 
 然而，實際用 gdb 動態追縱，發現指令並不是預先想像的那樣：
-<img src="image/0c876356_gdb.png" width="700" height="190">
+<img src="image/0c876356_gdb.png" width="1000" height="500">
 
 
 ### 07_shellcode3
