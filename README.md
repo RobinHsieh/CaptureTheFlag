@@ -291,5 +291,71 @@ Instruction
 * NOPs
 * `read` syscall
 
+#### Solving Process
+題目有給 C code，先打開來看看：
+
+```c
+#include <stdlib.h>
+#include <stdio.h>
+
+void init() {
+	setvbuf(stdin, NULL, _IONBF, 0);
+	setvbuf(stdout, NULL, _IONBF, 0);
+	setvbuf(stderr, NULL, _IONBF, 0);
+	return;
+}
+
+int main() {
+	init();
+	char buf[150];
+
+	puts("Input something in this buffer!!!");
+	puts("However,you can't input 'nop' such as '0x90' this time!!!");
+	puts("And also,you need to bypass some restrictions in your shellcode!!!");
+	puts("This time the restrictions are very strict OAO!??");
+	
+	read(0, buf, 150);
+
+	for (int i = 0; i < 150; i++) {
+		if (buf[i] == '\x90') {
+			puts("You can't input '0x90' this time!  :(( ");
+			exit(0);
+		}
+	}
+
+	for (int i = 0; i < 25; i++) {
+		if (buf[i*6] != '\x0c' && buf[(i*6)+1] != '\x87' && buf[(i*6)+2] != '\x63') {
+			puts("Try to bypass the restriction!!!");
+			puts("Try again!!!");
+			exit(0);
+		}
+	}
+
+	void (*func)() = (void (*)())buf;
+	(*func)();
+
+	return 0;
+}
+```
+
+這題的限制和上一題很像，只是變成每 6 bytes 就會檢查前三個 bytes 是否為 `0x0c 0x87 0x63`，擺明就是不讓人用同樣的方法解，\
+每 6 bytes 就被打斷一次，是要怎麼湊出可以執行 `execve("/bin/sh", NULL, NULL)` 的 shellcode？
+\
+\
+\
+\
+\
+不過 rip 都已經被我們劫持了，方法有的是\
+我們試試看能不能湊出一段可以執行 `read(0, ..., ...)` 的 shellcode，\
+syscall number 是 `rax = 0x00` 、參數分別是：\
+`rdi` - 檔案描述符 (file descriptor)\
+`rsi` - 儲存讀取資料的緩衝區指針 (*buffer)\
+`rdx` - 要讀取到緩衝區的位元數 (count)\
+
+`rsi` 已經指向了 `buf[0]`，所以只要把 `rdi`, `rdx` 和 `rax` 設定好就可以了
+
+藉由呼叫 `sys_read` 來重新注入 `buf[]` 的記憶體空間，因為此時程式已經檢查完 `buf[]` 的內容，所以重新注入的 shellcode 將不會再受到限制
+
+
 
 
