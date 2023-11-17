@@ -340,14 +340,14 @@ int main() {
 
 這題的限制和上一題很像，只是變成每 6 bytes 就會檢查前三個 bytes 是否為 `0x0c 0x87 0x63`，完全無法使用上ㄧ題的方法
 
-由於每 6 bytes 就被打斷一次，根本無法直接使用 execve("/bin/sh", NULL, NULL) 的 shellcode\
+由於每 6 bytes 就被打斷一次，根本無法直接湊出 `execve("/bin/sh", NULL, NULL)` 的 shellcode\
 不過，由於我們已經控制了程序的執行流程（rip），因此仍有解決方案
 \
 \
 \
 \
 \
-試著湊出一段可以執行 `read(0, ..., ...)` 的 shellcode，\
+為了繞過本題的限制，設法湊出一段可以執行 `read(0, ..., ...)` 的 shellcode，\
 syscall number 是 `rax = 0x00` 、參數分別是：\
 `rdi` - 檔案描述符 (file descriptor)\
 `rsi` - 儲存讀取資料的緩衝區指針 (*buffer)\
@@ -355,7 +355,10 @@ syscall number 是 `rax = 0x00` 、參數分別是：\
 
 `rsi` 已經指向了 `buf[0]`，所以只要把 `rdi`, `rdx` 和 `rax` 設定好就可以了
 
-藉由呼叫 `sys_read` 來重新注入 `buf[]` 的記憶體空間，因為此時程式已經檢查完 `buf[]` 的內容，所以重新注入的 shellcode 將不會再受到限制
+Q: 為何要呼叫 `sys_read` 呢？\
+A: 因為可以藉由呼叫 `sys_read` 來重新注入新的 shellcode 到 `buf[]` 的記憶體空間
+
+因為此時程式已經完成了對 `buf[]` 內容的位元檢查，所以重新注入的 shellcode 將不再受到位元限制
 
 下面是呼叫 `sys_read` 的ㄧ小段 shellcode：
 ```bash
