@@ -67,14 +67,14 @@ _Example:_\
 * Canary brute forcing
 * ROP gadgets
 
-
+<br/><br/><br/>
 
 ### 04_wakuwaku
 #### Methods
 * PLT –– Procedure Linkage Table
 * GOT –– Global Offset Table
 
-
+<br/><br/><br/>
 
 ### 05_shellcode
 #### Methods
@@ -111,6 +111,7 @@ int main() {
 \
 \
 \
+\
 為了更深刻得意會到這段程式碼在做什麼，使用 `objdump -d <executable>` 反組譯執行檔的 .text 區段，擷取出對應 C code 中的這兩行的組合語言：
 ```c
 void (*func)() = (void (*)())buf;
@@ -132,6 +133,7 @@ void (*func)() = (void (*)())buf;
 \
 \
 \
+\
 用 `checksec` 檢查執行檔的安全屬性，可以看到 NX 沒開：
 ```terminal
 [+] checksec for '/home/citrusalessia/CaptureTheFlag/05_shellcode/shellcode'
@@ -145,7 +147,7 @@ RelRO                         : Partial
 所以接下來只要將 sys_execve 的 shellcode 寫入 `buf`，就可以成功了，
 shellcode 可以參考 [shell-storm](http://shell-storm.org/shellcode/)，這裡使用的是 [Linux/x86 - execve(/bin/sh) Shellcode (21 bytes)](http://shell-storm.org/shellcode/files/shellcode-827.php)
 
-
+<br/><br/><br/>
 
 ### 06_shellcode2
 #### Methods
@@ -207,6 +209,7 @@ int main() {
 \
 \
 \
+\
 利用 python 的 `pwntools` 來幫助我們湊出 shellcode：
 ```python
 from pwn import *
@@ -229,6 +232,7 @@ for i in range(0x100):
 \
 \
 \
+\
 然而，實際用 gdb 動態追縱時，發現指令並不是先前預想的那樣：
 <img src="image/0c876356_gdb.png" width="1000" height="500">
 
@@ -245,9 +249,11 @@ for i in range(0x100):
 \
 \
 \
+\
 此外，可以注意到 ```movsxd edx, DWORD PTR [rsi+0x48]``` 這行指令好像語法上有點怪怪的，\
 其實 `MOVSXD r32, r/m32` 這語法是合法的，只是不鼓勵使用
 <img src="image/movsxd_r32_rm32.png" width="1001" height="319">
+\
 \
 \
 \
@@ -276,6 +282,7 @@ eb 04                   jmp short +0x4  # (jmp short 0x4), jump to buf[24]
 Instruction
 ```
 
+<br/><br/><br/>
 
 ### 07_shellcode3
 #### Methods
