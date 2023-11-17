@@ -207,7 +207,7 @@ for i in range(0x100):
     print()
 ```
 
-`0x0c 0x87 0x63 0x56` 這對好像不錯，只有影響到 `al` 和 `rsp`：
+`0x0c 0x87 0x63 0x56` 這對指令集好像不錯，只有影響到 `al` 和 `rsp`：
 ```assembly
    0:   0c 87                   or     al, 0x87
    2:   63                      .byte 0x63
@@ -216,6 +216,9 @@ for i in range(0x100):
 
 再用 `objdump -b binary -m i386:86-64 -M intel -D <executable>` 確認一次：
 <img src="image/0c876356.png" width="700" height="190">
+
+然而，實際用 gdb 動態追縱，發現指令並不是預先想像的那樣：
+<img src="image/0c876356_gdb.png" width="700" height="190">
 
 
 ### 07_shellcode3
