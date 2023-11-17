@@ -207,14 +207,14 @@ for i in range(0x100):
     print()
 ```
 
-`0x0c 0x87 0x63 0x56` 這對好像不錯：
+`0x0c 0x87 0x63 0x56` 這對好像不錯，只有影響到 `al` 和 `rsp`：
 ```assembly
    0:   0c 87                   or     al, 0x87
    2:   63                      .byte 0x63
    3:   56                      push   rsi
 ```
 
-再用 `objdump -b binary -m i386 -M intel -D <executable>` 確認一次：
+再用 `objdump -b binary -m i386:86-64 -M intel -D <executable>` 確認一次：
 <img src="image/0c876356.png" width="700" height="190">
 
 
