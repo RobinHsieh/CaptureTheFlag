@@ -107,7 +107,10 @@ int main() {
 }
 ```
 首先要了解 function pointer 的概念，可以參考 [C 語言中的函數指標](https://openhome.cc/Gossip/CGossip/FunctionPointer.html)。
-
+\
+\
+\
+\
 為了更深刻得意會到這段程式碼在做什麼，使用 `objdump -d <executable>` 反組譯執行檔的 .text 區段，擷取出對應 C code 中的這兩行的組合語言：
 ```c
 void (*func)() = (void (*)())buf;
@@ -125,7 +128,10 @@ void (*func)() = (void (*)())buf;
 第1, 2行在把 `buf` 的值 寫入 `func` 的位址`[rbp-0x8]`\
 第3~5行要呼叫 `func`\
 明顯就是要讓 rip 跳到 stack segment 執行 `buf` 的內容 (shellcode)
-
+\
+\
+\
+\
 用 `checksec` 檢查執行檔的安全屬性，可以看到 NX 沒開：
 ```terminal
 [+] checksec for '/home/citrusalessia/CaptureTheFlag/05_shellcode/shellcode'
@@ -197,7 +203,10 @@ int main() {
 2. 每 20 bytes 會檢查前三個 bytes 是否為 `0x0c 0x87 0x63`（好中二XD）
 
 因此，能否用第一組 `0x0c 0x87 0x63` 為開頭湊出有效的指令集，並且使用 `jmp` 指令跳過剩下的 `0x0c 0x87 0x63`，就是解出這題的關鍵
-
+\
+\
+\
+\
 利用 python 的 `pwntools` 來幫助我們湊出 shellcode：
 ```python
 from pwn import *
@@ -215,8 +224,11 @@ for i in range(0x100):
 ```
 
 再用 `objdump -b binary -m i386:86-64 -M intel -D <executable>` 確認一次，和 `pwntools` 反組譯的結果一樣：
-<img src="image/0c876356.png" width="880" height="250">
-
+<img src="image/0c876356.png" width="880" height="240">
+\
+\
+\
+\
 然而，實際用 gdb 動態追縱時，發現指令並不是先前預想的那樣：
 <img src="image/0c876356_gdb.png" width="1000" height="500">
 
@@ -229,12 +241,17 @@ for i in range(0x100):
 
 因此，在湊好合適的指令集後，也需要留意有沒有上面的這種情況發生，以免影響到 shellcode 的執行\
 幸好在本次的形況下無傷大雅，不過還是先改成 `0x0c 0x87 0x63 0xd0` 這一組指令集
-
+\
+\
+\
+\
 此外，可以注意到 ```movsxd edx, DWORD PTR [rsi+0x48]``` 這行指令好像語法上有點怪怪的，\
 其實 `MOVSXD r32, r/m32` 這語法是合法的，只是不鼓勵使用
 <img src="image/movsxd_r32_rm32.png" width="1001" height="319">
-
-
+\
+\
+\
+\
 為了順利執行 shellcode，我們需要找到一個合適的 `jmp` 指令來跳過剩餘的 `0x0c 0x87 0x63`，\
 考慮到這題的限制，即每 17 bytes 必須形成一組有效的指令集，我們需要選擇一個盡可能少佔用字節的 `jmp` 指令，\
 因此我選擇了 `short jump` 作為執行此操作的指令
