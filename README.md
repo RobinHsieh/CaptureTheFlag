@@ -354,7 +354,11 @@ syscall number 是 `rax = 0x00` 、參數分別是：\
 `rdx` - 要讀取到緩衝區的位元數 (count)
 
 `rsi` 已經指向了 `buf[0]`，所以只要把 `rdi`, `rdx` 和 `rax` 設定好就可以了
-
+\
+\
+\
+\
+\
 Q: 為何要呼叫 `sys_read` 呢？\
 A: 因為可以藉由呼叫 `sys_read` 來重新注入新的 shellcode 到 `buf[]` 的記憶體空間
 
