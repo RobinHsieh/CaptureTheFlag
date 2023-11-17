@@ -338,19 +338,20 @@ int main() {
 }
 ```
 
-這題的限制和上一題很像，只是變成每 6 bytes 就會檢查前三個 bytes 是否為 `0x0c 0x87 0x63`，擺明就是不讓人用同樣的方法解，\
-每 6 bytes 就被打斷一次，是要怎麼湊出可以執行 `execve("/bin/sh", NULL, NULL)` 的 shellcode？
+這題的限制和上一題很像，只是變成每 6 bytes 就會檢查前三個 bytes 是否為 `0x0c 0x87 0x63`，完全無法使用上ㄧ題的方法
+
+由於每 6 bytes 就被打斷一次，根本無法直接使用 execve("/bin/sh", NULL, NULL) 的 shellcode\
+不過，由於我們已經控制了程序的執行流程（rip），因此仍有解決方案
 \
 \
 \
 \
 \
-不過 rip 都已經被我們劫持了，方法有的是\
-我們試試看能不能湊出一段可以執行 `read(0, ..., ...)` 的 shellcode，\
+試著湊出一段可以執行 `read(0, ..., ...)` 的 shellcode，\
 syscall number 是 `rax = 0x00` 、參數分別是：\
 `rdi` - 檔案描述符 (file descriptor)\
 `rsi` - 儲存讀取資料的緩衝區指針 (*buffer)\
-`rdx` - 要讀取到緩衝區的位元數 (count)\
+`rdx` - 要讀取到緩衝區的位元數 (count)
 
 `rsi` 已經指向了 `buf[0]`，所以只要把 `rdi`, `rdx` 和 `rax` 設定好就可以了
 
