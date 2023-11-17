@@ -215,10 +215,20 @@ for i in range(0x100):
 ```
 
 再用 `objdump -b binary -m i386:86-64 -M intel -D <executable>` 確認一次：
-<img src="image/0c876356.png" width="850" height="300">
+<img src="image/0c876356.png" width="850" height="250">
 
 然而，實際用 gdb 動態追縱，發現指令並不是預先想像的那樣：
 <img src="image/0c876356_gdb.png" width="1000" height="500">
+
+因為電腦將 `0x0c 0x87 0x63 0x56` 和緊跟在後的 `0x48` 解讀為第ㄧ、二行指令，順帶也影響到接續的指令：
+```assembly
+0c 87                	or     al, 0x87
+63 56 48                movsxd edx, DWORD PTR [rsi+0x48]
+31 f6                	xor    esi, esi                  ; <-- 預想是：48 31 f6                xor    rsi, rsi
+```
+
+因此，在湊好合適的指令集後，也需要留意有沒有上面的這種情況發生，以免影響到 shellcode 的執行\
+幸好在本次的形況下無傷大雅，所以就不管它了XD
 
 
 ### 07_shellcode3
