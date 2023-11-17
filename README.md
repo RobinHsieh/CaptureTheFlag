@@ -1,4 +1,4 @@
-# Write-up CTF 11/2023, Catogory: Pwn
+# Write-up CTF 11/2023, Category: Pwn
 
 
 ## objdump commands
@@ -227,7 +227,7 @@ for i in range(0x100):
 ```
 
 再用 `objdump -b binary -m i386:86-64 -M intel -D <executable>` 確認一次，和 `pwntools` 反組譯的結果一樣：
-<img src="image/0c876356.png" width="880" height="240">
+<img src="image/0c876356.png" width="880" height="230">
 \
 \
 \
