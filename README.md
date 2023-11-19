@@ -115,8 +115,19 @@ _**`NX`**_:\
 用 IDA 反編譯，可以看到程式碼中有 `fork()` 的存在：
 <img src="image/fork.png" width="1000" height="278">
 
-這題可以使用第二種方法，關於 `fork()` 的用法可以參考 [fork() in C](https://www.geeksforgeeks.org/fork-system-call/)\
-關於 `brute force` 的用法可以參考 [Brute Force](https://book.hacktricks.xyz/reversing-and-exploiting/linux-exploiting-basic-esp/bypassing-canary-and-pie)
+所以，這題可以使用第二種方法，關於 `fork()` 的用法可以參考 [fork() in C](https://www.geeksforgeeks.org/fork-system-call/)\
+關於 `brute force` 的用法可以參考 [Canary Brute-Forcing](https://book.hacktricks.xyz/reversing-and-exploiting/linux-exploiting-basic-esp/bypassing-canary-and-pie)
+
+簡單來說，利用 `fork()` 給予我們的無限次猜 `Canary` 的機會，一個一個 byte 慢慢猜，如果猜錯程式就會觸發 `__stack_chk_fail()` 這個函數，如果猜對就不會觸發，直到猜出所有 byte 為止
+\
+\
+\
+\
+\
+解決了 `Canary` 之後，下個問題就是如何在 stack segment 不可執行的情況下，成功呼叫 `execve("/bin/sh", NULL, NULL)` 了\
+這裡我們可以利用 ROP (Return Oriented Programming) 的技巧，來達成這個目的
+
+
 
 <br/><br/><br/>
 
