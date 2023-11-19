@@ -67,6 +67,35 @@ _Example:_\
 * Canary brute forcing
 * ROP gadgets
 
+#### Solving Process
+用 `checksec` 檢查執行檔的安全屬性：
+```
+gef➤  checksec
+[+] checksec for '/home/citrusalessia/CaptureTheFlag/03_Iamyourfather/father'
+Canary                        : ✓ (value: 0x11301209b18da000)
+NX                            : ✓ 
+PIE                           : ✘ 
+Fortify                       : ✘ 
+RelRO                         : Partial
+```
+\
+\
+\
+\
+\
+`Canary`:\
+在20世紀早期，礦工在進入煤礦之前會帶一隻活金絲雀。由於金絲雀對有害氣體（如一氧化碳）非常敏感，它們會在人類感覺不到危險之前受到影響，從而提供一種早期警告系統。如果金絲雀出現問題，礦工就知道環境可能不安全，需要撤離。
+
+在計算機安全中，`Canary` 是一種類似的防護機制。它是一個放在重要數據（如返回地址）之前的小數據片段，如果攻擊者嘗試覆蓋或改變這個區域的記憶體，Canary 值會被改變，從而警示系統可能發生安全漏洞
+
+譬如說，在這裡 `Canary` 用於在 epilogue 前時候檢查當前函數的 stack frame 有沒有被緩衝區溢出攻擊 (BOA) 的可能性
+
+這裡我們可以看到 `Canary` 的數值被放在 `rbp-0x8` 的位置：
+<img src="image/Canary.png" width="1000" height="605">
+
+`NX`:\
+`NX` 是 `No eXecute` 的縮寫，是一種硬體技術，用於防止攻擊者在執行程式時，將記憶體區段當作指令執行，從而防止攻擊者執行 shellcode
+
 <br/><br/><br/>
 
 ### 04_wakuwaku
@@ -350,12 +379,11 @@ int main() {
 為了成功繞過本題的限制，我們需要在以每 6 bytes 為一個單位的情況下，設法湊出一段可以執行 `read(0, ..., ...)` 的 shellcode
 
 為了成功執行 `sys_read` 的系統呼叫，我們需要設定特定的寄存器以符合要求，具體的設定如下：\
-`rax` - syscall number, 數值需為 0 以代表 `sys_read`\
-`sys_read` 需要的參數分別有：
+`rax` - syscall number, 數值需為 0 以代表 `sys_read`，其需要的參數分別有：
 
-`rdi` - 檔案描述符 (file descriptor), 數值需為 0，表標準輸入 (stdin)\
-`rsi` - 指向用於讀取資料的緩衝區指針 (*buffer), 數值需指向可寫、可執行的記憶體空間\
-`rdx` - 要讀取到緩衝區的位元數 (count), 數值不要太小或太大即可
+`rdi` - 表檔案描述符 (file descriptor), 數值需為 0，表標準輸入 (stdin)\
+`rsi` - 表指向用於讀取資料的緩衝區指針 (*buffer), 數值需指向可寫、可執行的記憶體空間\
+`rdx` - 表要讀取到緩衝區的位元數 (count), 數值不要太小或太大即可
 \
 \
 \
@@ -383,7 +411,8 @@ Instruction
 Q: 為何要呼叫 `sys_read` 呢？\
 A: 因為可以藉由呼叫 `sys_read` 來重新注入新的 shellcode 到 `buf[]` 的記憶體空間
 
-此時程式已經完成了對 `buf[]` 內容的位元檢查，所以重新注入的 shellcode 將不再受到位元限制
+Q: 為何要重新注入新的 shellcode 到 `buf[]` 的記憶體空間呢？\
+A: 重新注入的此時，程式已經完成了對 `buf[]` 內容的位元檢查，所以重新注入的 shellcode 將不再受到位元限制
 \
 \
 \
