@@ -112,6 +112,9 @@ _**`NX`**_:\
 1. 透過 `print()` 印出 `Canary` 的數值
 2. 透過 `fork()` 暴力破解 (brute force) `Canary` 的數值
 
+用 IDA 反編譯，可以看到程式碼中有 `fork()` 的存在：
+<img src="image/fork.png" width="1000" height="278">
+
 這題可以使用第二種方法，關於 `fork()` 的用法可以參考 [fork() in C](https://www.geeksforgeeks.org/fork-system-call/)\
 關於 `brute force` 的用法可以參考 [Brute Force](https://book.hacktricks.xyz/reversing-and-exploiting/linux-exploiting-basic-esp/bypassing-canary-and-pie)
 
