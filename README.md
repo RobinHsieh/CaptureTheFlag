@@ -78,11 +78,7 @@ PIE                           : ✘
 Fortify                       : ✘ 
 RelRO                         : Partial
 ```
-\
-\
-\
-\
-\
+
 上面的這些安全屬性分別代表什麼意思呢？
 
 `Canary`:\
@@ -92,12 +88,18 @@ RelRO                         : Partial
 
 譬如說，在這裡 `Canary` 用於在 epilogue 前時候檢查當前函數的 stack frame 有沒有被緩衝區溢出攻擊 (BOA) 的可能性
 
+<br/>
+
 這裡我們可以看到， `Canary` 的數值被放在 `rbp-0x8` 的位置：
 <img src="image/Canary.png" width="1000" height="605">
 
 這裡我們可以看到， Compiler 在編譯時，會在 epilogue 前加入一段程式碼，用於檢查 `Canary` 的數值有沒有被改變：
 <img src="image/stack_chk_fail.png" width="1000" height="392">
-
+\
+\
+\
+\
+\
 `NX`:\
 `NX` 是 `No eXecute` 的縮寫，是一種硬體技術，用於防止攻擊者在執行程式時，將記憶體區段當作指令執行，從而防止攻擊者執行 shellcode
 
