@@ -81,15 +81,23 @@ RelRO                         : Partial
 
 上面的這些安全屬性分別代表什麼意思呢？
 
-`Canary`:\
-在20世紀早期，礦工在進入煤礦之前會帶一隻活金絲雀。由於金絲雀對有害氣體（如一氧化碳）非常敏感，它們會在人類感覺不到危險之前受到影響，從而提供一種早期警告系統。如果金絲雀出現問題，礦工就知道環境可能不安全，需要撤離。
+_**`Canary`**_:\
+在20世紀早期，礦工在進入煤礦之前會帶一隻活金絲雀\
+由於金絲雀對有害氣體（如一氧化碳）非常敏感，它們會在人類感覺不到危險之前受到影響，從而提供一種早期警告系統\
+如果金絲雀出現問題，礦工就知道環境可能不安全，需要撤離
 
-在計算機安全中，`Canary` 是一種類似的防護機制。它是一個放在重要數據（如返回地址）之前的小數據片段，如果攻擊者嘗試覆蓋或改變這個區域的記憶體，Canary 值會被改變，從而警示系統可能發生安全漏洞
+在計算機安全中，`Canary` 是一種類似的防護機制\
+它是一個放在重要數據（如返回地址）之前的小數據片段，如果攻擊者嘗試覆蓋或改變這個區域的記憶體，Canary 值會被改變，從而警示系統可能發生安全漏洞
 
 譬如說，在這裡 `Canary` 用於在 epilogue 前時候檢查當前函數的 stack frame 有沒有被緩衝區溢出攻擊 (BOA) 的可能性
 
-<br/>
-
+_**`NX`**_:\
+`NX` 是 `No eXecute` 的縮寫，是一種硬體技術，用於防止攻擊者在執行程式時，將記憶體區段當作指令執行，從而防止攻擊者執行 shellcode
+\
+\
+\
+\
+\
 這裡我們可以看到， `Canary` 的數值被放在 `rbp-0x8` 的位置：
 <img src="image/Canary.png" width="1000" height="605">
 
@@ -100,8 +108,12 @@ RelRO                         : Partial
 \
 \
 \
-`NX`:\
-`NX` 是 `No eXecute` 的縮寫，是一種硬體技術，用於防止攻擊者在執行程式時，將記憶體區段當作指令執行，從而防止攻擊者執行 shellcode
+要破解 `Canary`，我們需要先知道 `Canary` 的數值是多少，常見的方法有：
+1. 透過 `print()` 印出 `Canary` 的數值
+2. 透過 `fork()` 暴力破解 (brute force) `Canary` 的數值
+
+這題可以使用第二種方法，關於 `fork()` 的用法可以參考 [fork() in C](https://www.geeksforgeeks.org/fork-system-call/)\
+關於 `brute force` 的用法可以參考 [Brute Force](https://book.hacktricks.xyz/reversing-and-exploiting/linux-exploiting-basic-esp/bypassing-canary-and-pie)
 
 <br/><br/><br/>
 
