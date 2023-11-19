@@ -347,11 +347,14 @@ int main() {
 \
 \
 \
-為了繞過本題的限制，設法湊出一段可以執行 `read(0, ..., ...)` 的 shellcode，\
-syscall number 是 `rax = 0x00` 、參數分別是：\
-`rdi` - 檔案描述符 (file descriptor)\
-`rsi` - 儲存讀取資料的緩衝區指針 (*buffer)\
-`rdx` - 要讀取到緩衝區的位元數 (count)
+為了成功繞過本題的限制，我們需要在以每 6 bytes 為一個單位的情況下，設法湊出一段可以執行 `read(0, ..., ...)` 的 shellcode
+
+為了成功執行 `sys_read` 的系統呼叫，我們需要設定特定的寄存器以符合要求，具體的設定如下：\
+`rax` - syscall number, 數值需為 0，`sys_read` 的參數分別有：
+
+`rdi` - 檔案描述符 (file descriptor), 數值需為 0，表標準輸入 (stdin)\
+`rsi` - 指向用於讀取資料的緩衝區指針 (*buffer), 數值需指向可寫、可執行的記憶體空間\
+`rdx` - 要讀取到緩衝區的位元數 (count), 數值不要太小或太大即可
 
 `rsi` 已經指向了 `buf[0]`，所以只要把 `rdi`, `rdx` 和 `rax` 設定好就可以了
 
