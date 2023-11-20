@@ -145,9 +145,8 @@ rop_chain += p64(0x000000000000003b) # var:(59)
 rop_chain += p64(0x00000000004013ec) # -> syscall;
 ```
 
-值得注意的是，我將 `"/bin//sh"` 的字串寫入到 `.data segment` 中，而不是 `.stack segment` 中
-
-測試時發現 `.stack segment` 的記憶體位址會隨著每次執行程式而改變，而 `.data segment` 的記憶體位址則不會改變
+值得注意的是，我將 `"/bin//sh"` 的字串寫入到 `.data segment` 而不是 `.stack segment` 中，\
+因為在測試時發現 `.stack segment` 的記憶體位址會隨著每次執行程式而改變，而 `.data segment` 的記憶體位址則不會改變，應該是因為 `ASLR` 的關係
 
 題目解開來事後確認一下 `ASLR` 是否有開啟，可以看到為模式 2 ，表示完全隨機化，所以 stack, heap, library 的位置都會被隨機化：
 <img src="image/ASLR_mode.png" width="1000" height="503">
