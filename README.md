@@ -445,7 +445,7 @@ int main() {
 \
 \
 \
-`rsi` 已經指向了 `buf[0]`，所以只要把 `rdi`, `rdx` 和 `rax` 設定好就可以了
+`rsi` 已經指向了 `buf[0]`、`rdi` 已經為 0，所以只要把 `rdx` 和 `rax` 設定好就可以了
 
 下面是呼叫 `sys_read` 的ㄧ小段 shellcode：
 ```bash
