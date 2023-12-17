@@ -110,7 +110,7 @@ _**`NX`**_:\
 \
 \
 要破解 `Canary`，我們需要先知道 `Canary` 的數值是多少，常見的方法有：
-1. 透過 `print()` 印出 `Canary` 的數值
+1. 先蓋住位於 `Canary LSB` 的 `0x00` ，再透過 `print()` 印出 `Canary` 的數值
 2. 透過 `fork()` 暴力破解 (brute force) `Canary` 的數值
 
 用 IDA 反編譯，可以看到程式碼中有 `fork()` 的存在：
