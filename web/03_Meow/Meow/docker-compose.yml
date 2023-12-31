@@ -1,0 +1,17 @@
+version: '3'
+services:
+  challenge:
+    build: ./service
+    ports:
+      - "12004:8080"
+    links:
+      - redis
+    environment:
+      - UWSGI_INI=/app/uwsgi.ini
+      - LISTEN_PORT=8080
+      - FLAG="ADL{This is fake}"
+    restart: unless-stopped
+
+  redis:
+    build: ./redis
+    restart: unless-stopped

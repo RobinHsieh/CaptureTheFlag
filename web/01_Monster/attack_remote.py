@@ -24,7 +24,7 @@ def set_login(username, password):
     login_headers["Authorization"] = f"Basic {authorization}"
 
 count = 0
-with open('rockyou30001.txt', 'r', encoding='latin-1') as rockyou:
+with open('rockyou.txt', 'r', encoding='latin-1') as rockyou:
     for line in rockyou:
         count += 1
         line = line.strip()

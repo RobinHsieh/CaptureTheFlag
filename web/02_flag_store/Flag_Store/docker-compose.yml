@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  flag_store:
+    build: .
+    volumes:
+      - ./src:/app
+    ports:
+      - 12006:80
+    restart: always

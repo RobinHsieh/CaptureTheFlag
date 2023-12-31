@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Meow!!! Test to see if you are a cat.</title>
+    <link rel="stylesheet" href="https://unpkg.com/mvp.css">
+  </head>
+  <body>
+    <main>
+      <section>
+        <header id="start">
+          <h1>Meow!!! Test to see if you are a cat.</h1>
+          <img src="/static/img/kawaii-kitty-drawing-28.png" width="30%"><br>
+          <button id="btn-start">Start Exam</button>
+        </header>
+      </section>
+      <section id="exam" hidden>
+        {% for i in range(10) %}
+        <div class="qlink" id="q{{ i+1 }}"><a href="#">Q{{ i+1 }}&nbsp;&nbsp;&nbsp;</a></div>
+        {% endfor %}
+        <hr>
+        <div>
+          <p><b>READING PASSAGE</b></p>
+          <p id="exam-passage"></p>
+          <hr>
+          <p><b>QUESTIONS</b></p>
+          {% for i in range(10) %}
+          <form>
+            <p>Q{{ i+1 }}. <span id="exam-question-{{ i+1 }}"></span></p>
+            {% for j in range(4) %}
+            <div>
+              <input type="radio" name="exam-ans-{{i+1}}" id="exam-ans-{{i+1}}-{{j+1}}">
+              <label for="exam-ans-{{i+1}}-{{j+1}}" id="exam-question-{{i+1}}-{{j+1}}"></label>
+            </div>
+            {% endfor %}
+          </form>
+          {% endfor %}
+        </div>
+        <button id="submit">Go To Next</button>
+      </section>
+      <section id="score" hidden>
+        <header>
+          <h1>Your Score</h1>
+          <p><b id="score-value"></b> / 100</p>
+          <p id="flag"></p>
+          <a href="/">Go back to home</a>
+        </header>
+      </section>
+    </main>
+    <script src="/static/js/script.js"></script>
+  </body>
+</html>

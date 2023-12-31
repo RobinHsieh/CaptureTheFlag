@@ -1,0 +1,27 @@
+<!-- templates/ItemList.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item List</title>
+</head>
+<body>
+    <p><span id="msg-display">{{ msg }}</span></p>
+    <p>Available money: <span id="money-display">{{ money }}</span></p>
+
+    <h1>Item List</h1>
+    <ul>
+        {% for product in products %}
+            <li>
+                <span class="product-name">{{ product['name'] }}</span>
+                <span class="product-price">${{ product['price'] }}</span>
+                <button class="buy-button" data-product-id="{{ product['id'] }}">Buy</button>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
